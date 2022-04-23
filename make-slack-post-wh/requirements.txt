@@ -1,4 +1,0 @@
-PyGithub == 1.55
-cryptography == 36.0.2
-pyjwt == 2.3.0
-pyyaml == 6.0

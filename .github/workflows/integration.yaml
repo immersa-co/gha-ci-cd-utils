@@ -1,0 +1,17 @@
+name: Integration Test
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Self test
+        id: self-test
+        uses: immersa-co/gha-ci-cd-utils/make-slack-post-wh@main
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_SANDBOX }}
+          action: "Testing github action in repo"
+          action_success: "True"
+          input_details: ""
