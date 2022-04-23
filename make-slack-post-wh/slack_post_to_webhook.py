@@ -33,9 +33,8 @@ class PostToSlackWebhook:
         text = self.get_slack_payload_status_text()
         if self.details is not None:
             blocks_array = [{"type": "section", "text": {"type": "mrkdwn", "text": text}}]
-            for detail in self.details:
-                about, url = detail
-                blocks_array.append(PostToSlackWebhook.get_slack_payload_section(about, url))
+            for about in self.details:
+                blocks_array.append(PostToSlackWebhook.get_slack_payload_section(about, self.details[about]))
             # text element is what shows up in the desktop notification
             # block is the message posted on the channel
             payload_json = {
