@@ -11,7 +11,7 @@ jobs:
         id: self-test
         uses: immersa-co/gha-ci-cd-utils/make-slack-post-wh@main
         with:
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_SANDBOX }}
+          slack_webhook_url: ${{ secrets.GHA_SLACK_SANDBOX }}
           action: "Testing github action in repo"
           action_success: "True"
           input_details: ""
