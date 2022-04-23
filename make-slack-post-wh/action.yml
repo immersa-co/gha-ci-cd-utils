@@ -1,0 +1,23 @@
+name: "Post to slack"
+description: "Post to slack with a simple GH action step with a Webhook URL"
+author: "Surat Mukker"
+inputs:
+  slack_webhook_url:
+    description: "Webhook URL For the Slack channel to post to"
+    required: true
+  action:
+    description: "Action summary of the step, operation, published as '{action} was if {action_success} successful else unsuccessful'"
+    required: true
+  action_success:
+    description: "Action Succeeded or failed, True if success, False if failure"
+    required: true
+  details:
+    description: "Details of the run as a dict {}"
+    required: false
+    default: ""
+outputs:
+  result:
+    description: "True if the post was successful, False if there was an error"
+runs:
+  using: "docker"
+  image: "Dockerfile"
