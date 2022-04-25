@@ -1,0 +1,30 @@
+name: "Check Service Status with Duplo"
+description: "Trigger a service check with Duplo Cloud"
+author: "Surat Mukker"
+inputs:
+  host:
+    description: "Duplo host for the tenant"
+    required: true
+  token:
+    description: "Duplo token for the tenant"
+    required: true
+  tenant:
+    description: "Name of the Tenant"
+    required: true
+  tenant_id:
+    description: "Tenant Id"
+    required: true
+  services:
+    description: "Services to check"
+    required: false
+    default: "all"
+outputs:
+  result:
+    description: "True all requested services in running state, false otherwise"
+  running_services:
+    description: "Array of services in running state"
+  failed_services_dict:
+    description: "json dump of failed services with their status {'service1':status, 'service2':status, ....}"
+runs:
+  using: "docker"
+  image: "Dockerfile"

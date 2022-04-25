@@ -11,9 +11,9 @@ jobs:
         id: fetch-gha-token
         uses: immersa-co/gha-ghapp-token-generator@v1
         with:
-          privateKey: ${{ secrets.GH_CMA_KEY_WRITE }}
-          appId: 188440
-          installId: 24770148
+          privateKey: ${{ secrets.GH_CMA_KEY_WF }}
+          appId: 194643
+          installId: 25220815
 
       - name: Self test
         id: self-test
