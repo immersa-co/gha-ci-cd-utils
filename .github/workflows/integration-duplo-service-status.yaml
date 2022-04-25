@@ -15,4 +15,4 @@ jobs:
           token: "${{ secrets.DUPLO_TOKEN_NONPROD }}"
           tenant: "dev01"
           tenant_id: "ed684c6c-9876-4fde-999a-849d6586a4a7"
-          services: "['api', 'btcs', 'ftcs']"
+          services: '["api", "btcs", "ftcs"]'
