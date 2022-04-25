@@ -1,0 +1,28 @@
+name: "Trigger a workflow"
+description: "Trigger a workflow in another repo"
+author: "Surat Mukker"
+inputs:
+  gha_token:
+    description: "Github App token"
+    required: true
+  workflow_name:
+    description: "Name of the workflow file to be triggered"
+    required: true
+  github_repo:
+    description: "Github repo where the workflow is, only supports github.com at this time"
+    required: false
+    default: "immersa-co/change-control-manager"
+  workflow_ref:
+    description: "Branch or tag reference on which to trigger the workflow"
+    required: false
+    default: "main"
+  inputs:
+    description: "json string for workflow input params "
+    required: false
+    default: ""
+outputs:
+  result:
+    description: "True if the trigger was successful, False if there was an error"
+runs:
+  using: "docker"
+  image: "Dockerfile"
