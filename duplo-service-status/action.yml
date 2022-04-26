@@ -21,7 +21,7 @@ inputs:
     required: false
   retry_delay:
     description: "Delay between retries"
-    default: 1s
+    default: 1
     required: false
 outputs:
   result:
