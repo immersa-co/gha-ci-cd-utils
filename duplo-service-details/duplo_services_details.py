@@ -40,7 +40,8 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
         # If the Duplo service name contains 'duploinfrasvc', then ignore it when adding data to service_details
         for service in duplo_response:
             service_name = service["Name"]
-            if (include_all and not service_name.endswith('duploinfrasvc')) or (service_name in services_array):
+            if (include_all and not service_name.endswith('duploinfrasvc') and not service_name == "prefect-agent") \
+                    or (service_name in services_array):
                 ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition('/')
                 service_details.append(f"{image_tag}")
                 ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition(':')

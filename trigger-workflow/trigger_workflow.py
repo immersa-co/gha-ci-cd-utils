@@ -22,6 +22,7 @@ def run_action() -> None:
             result = workflow.create_dispatch(workflow_ref)
         else:
             inputs_dict = json.loads(inputs)
+            print(inputs_dict)
             result = workflow.create_dispatch(workflow_ref, inputs=inputs_dict)
         print(f"::set-output name=result::{result}{os.linesep}")
     except Exception as e:

@@ -7,11 +7,11 @@ export INPUT_RETRY_DELAY=1
 
 python3 ../duplo_services_status.py
 
-export INPUT_SERVICES='["i-donot-exist"]'
-python3 ../duplo_services_status.py
-
+#export INPUT_SERVICES='["i-donot-exist"]'
+#python3 ../duplo_services_status.py
+#
 export INPUT_SERVICES='["all"]'
 python3 ../duplo_services_status.py
-
-export INPUT_SERVICES=''
-python3 ../duplo_services_status.py
+#
+#export INPUT_SERVICES=''
+#python3 ../duplo_services_status.py

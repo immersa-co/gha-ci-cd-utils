@@ -47,7 +47,8 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
         # Loop through response contents and fill out data for running services
         for service in duplo_response:
             service_name = service["Name"]
-            if (include_all and not service_name.endswith('duploinfrasvc')) or (service_name in services_array):
+            if (include_all and not service_name.endswith('duploinfrasvc') and not service_name == "prefect-agent") \
+                    or (service_name in services_array):
                 status = service["CurrentStatus"]
                 if status == 1:
                     running_services.append(service_name)
@@ -69,8 +70,6 @@ def run_action() -> None:
     try:
         tenant_id = fetch_duplo_tenant_id(host, tenant, token)
 
-        print(tenant_id)
-
         if services != '':
             services_array = json.loads(services)
         else:
@@ -80,7 +79,7 @@ def run_action() -> None:
         max_attempts = int(max_attempts_str)
         while max_attempts > 0:
             running_services, failed_service_dict = fetch_duplo_services(host, tenant, tenant_id, token, services_array)
-            if len(running_services) == len(services_array) and len(failed_service_dict) == 0:
+            if len(failed_service_dict) == 0:
                 break
             else:
                 max_attempts = max_attempts - 1
