@@ -11,9 +11,6 @@ inputs:
   tenant:
     description: "Name of the Tenant"
     required: true
-  tenant_id:
-    description: "Tenant Id"
-    required: true
   services:
     description: "Services to check"
     required: false

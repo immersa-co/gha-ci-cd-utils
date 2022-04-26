@@ -6,5 +6,4 @@ export INPUT_SERVICES='["all"]'
 
 image_tag='test:test-gha-duplo-services-details-v1'
 docker build --platform linux/amd64 -t $image_tag ..
-docker run -e INPUT_HOST -e INPUT_TENANT -e INPUT_TENANT_ID \
--e INPUT_TOKEN -e INPUT_SERVICES -it --platform linux/amd64 $image_tag
+docker run -e INPUT_HOST -e INPUT_TENANT -e INPUT_TOKEN -e INPUT_SERVICES -it --platform linux/amd64 $image_tag

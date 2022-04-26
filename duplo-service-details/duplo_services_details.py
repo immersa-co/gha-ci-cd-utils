@@ -1,12 +1,19 @@
 import requests
 import json
 import os
-import time
 
-# TODO: Future enhancement create an action to look up all tenants and Ids using
-#   https://immersa-dev.duplocloud.net/admin/GetTenantsForUser
-#   response is an array of maps with 2 keys of interest
-#   [{..."TenantId":"<id>","AccountName":"<name>","...}, ...]
+
+def fetch_duplo_tenant_id(host, tenant, token):
+    duplo_url = f'{host}/admin/GetTenantsForUser'
+    duplo_headers = {'Authorization': f"Bearer {token}"}
+    response = requests.get(duplo_url, headers=duplo_headers)
+    if not response.ok:
+        print(f'Trouble Getting tenantId for {tenant} from duplo cloud {duplo_url} ')
+        print(response.content)
+        raise Exception(response.json())
+    else:
+        arr = list(filter(lambda item: item['AccountName'] == tenant, json.loads(response.content.decode())))
+        return arr[0]["TenantId"]
 
 
 def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
@@ -40,11 +47,13 @@ def run_action() -> None:
     # host, tenant, tenant_id, token, services
     host = os.environ["INPUT_HOST"]
     tenant = os.environ["INPUT_TENANT"]
-    tenant_id = os.environ["INPUT_TENANT_ID"]
+    # tenant_id = os.environ["INPUT_TENANT_ID"]
     token = os.environ["INPUT_TOKEN"]
     services = os.environ["INPUT_SERVICES"]
 
     try:
+        tenant_id = fetch_duplo_tenant_id(host, tenant, token)
+
         if services != '':
             services_array = json.loads(services)
         else:

@@ -9,6 +9,19 @@ import time
 #   [{..."TenantId":"<id>","AccountName":"<name>","...}, ...]
 
 
+def fetch_duplo_tenant_id(host, tenant, token):
+    duplo_url = f'{host}/admin/GetTenantsForUser'
+    duplo_headers = {'Authorization': f"Bearer {token}"}
+    response = requests.get(duplo_url, headers=duplo_headers)
+    if not response.ok:
+        print(f'Trouble Getting tenantId for {tenant} from duplo cloud {duplo_url} ')
+        print(response.content)
+        raise Exception(response.json())
+    else:
+        arr = list(filter(lambda item: item['AccountName'] == tenant, json.loads(response.content.decode())))
+        return arr[0]["TenantId"]
+
+
 def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
     # Send GET request to Duplo API to get service information
     duplo_url = f'{host}/subscriptions/{tenant_id}/GetPods'
@@ -45,13 +58,15 @@ def run_action() -> None:
     # host, tenant, tenant_id, token, services
     host = os.environ["INPUT_HOST"]
     tenant = os.environ["INPUT_TENANT"]
-    tenant_id = os.environ["INPUT_TENANT_ID"]
+    # tenant_id = os.environ["INPUT_TENANT_ID"]
     token = os.environ["INPUT_TOKEN"]
     services = os.environ["INPUT_SERVICES"]
     max_attempts_str = os.environ["INPUT_MAX_ATTEMPTS"]
     retry_delay = os.environ["INPUT_RETRY_DELAY"]
 
     try:
+        tenant_id = fetch_duplo_tenant_id(host, tenant, token)
+
         if services != '':
             services_array = json.loads(services)
         else:
@@ -69,7 +84,7 @@ def run_action() -> None:
                     time.sleep(int(retry_delay))
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
-        print(f"::set-output name=result::{len(running_services) == len(services_array)}{os.linesep}")
+        print(f"::set-output name=result::{len(failed_service_dict) == 0}{os.linesep}")
     except Exception as e:
         print(f"::error ::{str(e)}{os.linesep}")
         raise e
