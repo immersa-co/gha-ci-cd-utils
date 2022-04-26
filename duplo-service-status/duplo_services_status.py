@@ -8,6 +8,7 @@ import time
 #   response is an array of maps with 2 keys of interest
 #   [{..."TenantId":"<id>","AccountName":"<name>","...}, ...]
 
+
 def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
     # Send GET request to Duplo API to get service information
     duplo_url = f'{host}/subscriptions/{tenant_id}/GetPods'
@@ -68,6 +69,7 @@ def run_action() -> None:
                     time.sleep(int(retry_delay))
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
+        print(f"::set-output name=result::{len(running_services) == len(services_array)}{os.linesep}")
     except Exception as e:
         print(f"::error ::{str(e)}{os.linesep}")
         raise e
