@@ -24,15 +24,15 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
         # process and get the service list
         duplo_response = json.loads(response.content.decode())
         # Initializing dictionary to hold scraped data
-        service_details = dict()
+        service_details = []
         include_all = ('all' in services_array)
         # Loop through response contents and fill out data for running services
         # If the Duplo service name contains 'duploinfrasvc', then ignore it when adding data to service_details
         for service in duplo_response:
             service_name = service["Name"]
             if (include_all and not service_name.endswith('duploinfrasvc')) or (service_name in services_array):
-                ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition(':')
-                service_details[service_name] = image_tag
+                ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition('/')
+                service_details.append(f"{image_tag}")
     return service_details
 
 
