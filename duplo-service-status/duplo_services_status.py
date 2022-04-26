@@ -19,6 +19,8 @@ def fetch_duplo_tenant_id(host, tenant, token):
         raise Exception(response.json())
     else:
         arr = list(filter(lambda item: item['AccountName'] == tenant, json.loads(response.content.decode())))
+        print(response.content)
+        print(arr)
         return arr[0]["TenantId"]
 
 
@@ -66,6 +68,8 @@ def run_action() -> None:
 
     try:
         tenant_id = fetch_duplo_tenant_id(host, tenant, token)
+
+        print(tenant_id)
 
         if services != '':
             services_array = json.loads(services)

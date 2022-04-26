@@ -32,6 +32,9 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
         duplo_response = json.loads(response.content.decode())
         # Initializing dictionary to hold scraped data
         service_details = []
+        service_change_details = dict()
+        service_change_details["change-request"] = dict()
+        service_change_details["change-request"]["z-currently-running"] = dict()
         include_all = ('all' in services_array)
         # Loop through response contents and fill out data for running services
         # If the Duplo service name contains 'duploinfrasvc', then ignore it when adding data to service_details
@@ -40,7 +43,18 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
             if (include_all and not service_name.endswith('duploinfrasvc')) or (service_name in services_array):
                 ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition('/')
                 service_details.append(f"{image_tag}")
-    return service_details
+                ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition(':')
+                config_tag_sha, dash, run_id = image_tag.rpartition('-')
+                if "-" in config_tag_sha:
+                    config_tag, dash, sha = config_tag_sha.rpartition('-')
+                elif config_tag_sha != '':
+                    config_tag = config_tag_sha
+                else:
+                    config_tag = 'main'
+                service_change_details["change-request"]["z-currently-running"][service_name] = dict()
+                service_change_details["change-request"]["z-currently-running"][service_name]["image-tag"] = image_tag
+                service_change_details["change-request"]["z-currently-running"][service_name]["config-ref"] = config_tag
+    return service_details, service_change_details
 
 
 def run_action() -> None:
@@ -58,8 +72,10 @@ def run_action() -> None:
             services_array = json.loads(services)
         else:
             services_array = ['all']
-        service_details = fetch_duplo_service_details(host, tenant, tenant_id, token, services_array)
+        service_details, service_change_details = fetch_duplo_service_details(host, tenant, tenant_id, token, \
+                                                                              services_array)
         print(f"::set-output name=service_details::{json.dumps(service_details)}{os.linesep}")
+        print(f"::set-output name=service_change_details::{json.dumps(service_change_details)}{os.linesep}")
     except Exception as e:
         print(f"::error ::{str(e)}{os.linesep}")
         raise e
