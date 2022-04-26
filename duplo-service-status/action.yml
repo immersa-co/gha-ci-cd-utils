@@ -18,6 +18,14 @@ inputs:
     description: "Services to check"
     required: false
     default: "all"
+  max_attempts:
+    description: "Maximum attempts to check the service status"
+    default: 5
+    required: false
+  retry_delay:
+    description: "Delay between retries"
+    default: 1s
+    required: false
 outputs:
   result:
     description: "True all requested services in running state, false otherwise"

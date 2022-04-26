@@ -1,5 +1,5 @@
-name: Integration Test - Trigger workflow
-on: [push]
+name: Integration Test - Trigger workflow - for reference will not work
+on: [workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest

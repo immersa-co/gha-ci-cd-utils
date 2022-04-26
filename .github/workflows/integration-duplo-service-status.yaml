@@ -1,5 +1,5 @@
-name: Integration Test - Duplo Services Status
-on: [push]
+name: Integration Test - Duplo Services Status - for reference will not work
+on: [workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest

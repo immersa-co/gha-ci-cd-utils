@@ -1,7 +1,7 @@
 import requests
 import json
 import os
-
+import time
 
 # TODO: Future enhancement create an action to look up all tenants and Ids using
 #   https://immersa-dev.duplocloud.net/admin/GetTenantsForUser
@@ -47,13 +47,25 @@ def run_action() -> None:
     tenant_id = os.environ["INPUT_TENANT_ID"]
     token = os.environ["INPUT_TOKEN"]
     services = os.environ["INPUT_SERVICES"]
+    max_attempts_str = os.environ["INPUT_MAX_ATTEMPTS"]
+    retry_delay = os.environ["INPUT_RETRY_DELAY"]
 
     try:
         if services != '':
             services_array = json.loads(services)
         else:
             services_array = ['all']
-        running_services, failed_service_dict = fetch_duplo_services(host, tenant, tenant_id, token, services_array)
+        running_services = []
+        failed_service_dict = dict()
+        max_attempts = int(max_attempts_str)
+        while max_attempts > 0:
+            running_services, failed_service_dict = fetch_duplo_services(host, tenant, tenant_id, token, services_array)
+            if len(running_services) == len(services_array) and len(failed_service_dict) == 0:
+                break
+            else:
+                max_attempts = max_attempts - 1
+                if max_attempts > 0:
+                    time.sleep(int(retry_delay))
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
     except Exception as e:
