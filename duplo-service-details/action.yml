@@ -1,0 +1,26 @@
+name: "Fetch Service Details Duplo"
+description: "Fetch service details from Duplo Cloud"
+author: "Surat Mukker"
+inputs:
+  host:
+    description: "Duplo host for the tenant"
+    required: true
+  token:
+    description: "Duplo token for the tenant"
+    required: true
+  tenant:
+    description: "Name of the Tenant"
+    required: true
+  tenant_id:
+    description: "Tenant Id"
+    required: true
+  services:
+    description: "Services to check"
+    required: false
+    default: "all"
+outputs:
+  service_details:
+    description: "json dump of  services with their tags {'service1':tag, 'service2':tag, ....}"
+runs:
+  using: "docker"
+  image: "Dockerfile"
