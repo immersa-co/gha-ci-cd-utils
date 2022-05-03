@@ -70,7 +70,7 @@ def main():
     if action_success_str not in {"True", "False"}:
         raise Exception(f"[{action_success_str}] is not a valid value [True|False] for action_success")
     else:
-        action_success = True if action_success_str == 'True' else False
+        action_success = True if action_success_str == 'True' or action_success_str == 'true' else False
 
     details_str = os.environ["INPUT_DETAILS"]
     if details_str != "":
