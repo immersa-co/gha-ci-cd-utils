@@ -66,11 +66,11 @@ def main():
         raise Exception(f"[{slack_webhook_url}] is not a valid slack URL")
 
     action = os.environ["INPUT_ACTION"]
-    action_success_str = os.environ["INPUT_ACTION_SUCCESS"]
-    if action_success_str not in {"True", "False"}:
-        raise Exception(f"[{action_success_str}] is not a valid value [True|False] for action_success")
+    action_success_str = os.environ["INPUT_ACTION_SUCCESS"].lower()
+    if action_success_str not in {"true", "false"}:
+        raise Exception(f"[{action_success_str}] is not a valid value [True|False|true] for action_success")
     else:
-        action_success = True if action_success_str == 'True' or action_success_str == 'true' else False
+        action_success = True if action_success_str == 'true' else False
 
     details_str = os.environ["INPUT_DETAILS"]
     if details_str != "":
