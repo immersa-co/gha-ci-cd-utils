@@ -45,6 +45,7 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
         include_all = ('all' in services_array)
         # If the Duplo service name contains this string, then ignore it when adding data to services_dict
         # Loop through response contents and fill out data for running services
+        only_pending_status = True
         for service in duplo_response:
             service_name = service["Name"]
             if (include_all and not service_name.endswith('duploinfrasvc') and not service_name == "prefect-agent") \
@@ -54,7 +55,9 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
                     running_services.append(service_name)
                 else:
                     failed_service_dict[service_name] = status
-    return running_services, failed_service_dict
+                    if status != 3:
+                        only_pending_status = False
+    return running_services, failed_service_dict, only_pending_status
 
 
 def run_action() -> None:
@@ -78,12 +81,13 @@ def run_action() -> None:
         failed_service_dict = dict()
         max_attempts = int(max_attempts_str)
         while max_attempts > 0:
-            running_services, failed_service_dict = fetch_duplo_services(host, tenant, tenant_id, token, services_array)
+            running_services, failed_service_dict, only_pending_status = \
+                fetch_duplo_services(host, tenant, tenant_id, token, services_array)
             if len(failed_service_dict) == 0:
                 break
             else:
                 max_attempts = max_attempts - 1
-                if max_attempts > 0:
+                if max_attempts > 0 and only_pending_status:
                     time.sleep(int(retry_delay))
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
