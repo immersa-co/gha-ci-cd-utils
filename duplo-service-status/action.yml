@@ -17,11 +17,11 @@ inputs:
     default: "all"
   max_attempts:
     description: "Maximum attempts to check the service status"
-    default: 5
+    default: 15
     required: false
   retry_delay:
     description: "Delay between retries"
-    default: 1
+    default: 5
     required: false
 outputs:
   result:
