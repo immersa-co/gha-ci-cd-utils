@@ -19,8 +19,6 @@ def fetch_duplo_tenant_id(host, tenant, token):
         raise Exception(response.json())
     else:
         arr = list(filter(lambda item: item['AccountName'] == tenant, json.loads(response.content.decode())))
-        print(response.content)
-        print(arr)
         return arr[0]["TenantId"]
 
 
@@ -86,9 +84,14 @@ def run_action() -> None:
             if len(failed_service_dict) == 0:
                 break
             else:
+                print(f"Failed:[{json.dumps(failed_service_dict)}], Running: [{running_services}], "
+                      f"Result: [{len(failed_service_dict) == 0}]")
                 max_attempts = max_attempts - 1
                 if max_attempts > 0 and only_pending_status:
                     time.sleep(int(retry_delay))
+                else:
+                    print(f"Giving up after {max_attempts_str} attempts, there are services not "
+                          f"in running status. {json.dumps(failed_service_dict)}")
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
         print(f"::set-output name=result::{len(failed_service_dict) == 0}{os.linesep}")
