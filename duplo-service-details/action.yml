@@ -15,6 +15,10 @@ inputs:
     description: "Services to check"
     required: false
     default: "all"
+  filter_tags:
+    description: "Filter services with only these tags"
+    required: false
+    default: "None"
 outputs:
   service_details:
     description: "json dump of  services with their tags {'service1':tag, 'service2':tag, ....}"

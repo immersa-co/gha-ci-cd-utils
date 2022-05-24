@@ -16,7 +16,7 @@ def fetch_duplo_tenant_id(host, tenant, token):
         return arr[0]["TenantId"]
 
 
-def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
+def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array, filter_image_tags):
     # Send GET request to Duplo API to get service information
     duplo_url = f'{host}/subscriptions/{tenant_id}/GetPods'
     duplo_headers = {'Authorization': f"Bearer {token}"}
@@ -35,7 +35,9 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
         service_change_details = dict()
         service_change_details["change-request"] = dict()
         service_change_details["change-request"]["z-currently-running"] = dict()
+        service_change_details["change-request"]["z-filtered-services"] = dict()
         include_all = ('all' in services_array)
+        filter_tags = len(filter_image_tags) > 0
         # Loop through response contents and fill out data for running services
         # If the Duplo service name contains 'duploinfrasvc', then ignore it when adding data to service_details
         for service in duplo_response:
@@ -53,11 +55,22 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
                 else:
                     config_tag = 'main'
 
-                service_change_details["change-request"]["z-currently-running"][service_name] = dict()
-                service_change_details["change-request"]["z-currently-running"][service_name]["image-tag"] = image_tag
-                service_change_details["change-request"]["z-currently-running"][service_name]["config-ref"] = config_tag
-                service_change_details["change-request"]["z-currently-running"][service_name]["current-state"] = \
-                    service["CurrentStatus"]
+                if filter_tags and not image_tag.startswith(tuple(filter_image_tags)):
+                    service_change_details["change-request"]["z-filtered-services"][service_name] = dict()
+                    service_change_details["change-request"]["z-filtered-services"][service_name][
+                        "image-tag"] = image_tag
+                    service_change_details["change-request"]["z-filtered-services"][service_name][
+                        "config-ref"] = config_tag
+                    service_change_details["change-request"]["z-filtered-services"][service_name][
+                        "current-state"] = service["CurrentStatus"]
+                else:
+                    service_change_details["change-request"]["z-currently-running"][service_name] = dict()
+                    service_change_details["change-request"]["z-currently-running"][service_name][
+                        "image-tag"] = image_tag
+                    service_change_details["change-request"]["z-currently-running"][service_name][
+                        "config-ref"] = config_tag
+                    service_change_details["change-request"]["z-currently-running"][service_name][
+                        "current-state"] = service["CurrentStatus"]
 
     return service_details, service_change_details
 
@@ -69,6 +82,12 @@ def run_action() -> None:
     # tenant_id = os.environ["INPUT_TENANT_ID"]
     token = os.environ["INPUT_TOKEN"]
     services = os.environ["INPUT_SERVICES"]
+    filter_tags = os.environ["INPUT_FILTER_TAGS"]
+
+    if filter_tags is None or filter_tags == '':
+        filter_image_tags = []
+    else:
+        filter_image_tags = json.loads(filter_tags)
 
     try:
         tenant_id = fetch_duplo_tenant_id(host, tenant, token)
@@ -78,7 +97,7 @@ def run_action() -> None:
         else:
             services_array = ['all']
         service_details, service_change_details = fetch_duplo_service_details(host, tenant, tenant_id, token, \
-                                                                              services_array)
+                                                                              services_array, filter_image_tags)
         print(f"::set-output name=service_details::{json.dumps(service_details)}{os.linesep}")
         print(f"::set-output name=service_change_details::{json.dumps(service_change_details)}{os.linesep}")
 
