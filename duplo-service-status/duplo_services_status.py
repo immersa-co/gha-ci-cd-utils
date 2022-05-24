@@ -49,10 +49,11 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
             if (include_all and not service_name.endswith('duploinfrasvc') and not service_name == "prefect-agent") \
                     or (service_name in services_array):
                 status = service["CurrentStatus"]
+                ecr_repo, i, image_tag = service["Containers"][0]["Image"].rpartition('/')
                 if status == 1:
-                    running_services.append(service_name)
+                    running_services.append(f"{image_tag}")
                 else:
-                    failed_service_dict[service_name] = status
+                    failed_service_dict[f"{image_tag}"] = status
                     if status != 3:
                         only_pending_status = False
     return running_services, failed_service_dict, only_pending_status

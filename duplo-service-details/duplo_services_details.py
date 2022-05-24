@@ -52,9 +52,13 @@ def fetch_duplo_service_details(host, tenant, tenant_id, token, services_array):
                     config_tag = config_tag_sha
                 else:
                     config_tag = 'main'
+
                 service_change_details["change-request"]["z-currently-running"][service_name] = dict()
                 service_change_details["change-request"]["z-currently-running"][service_name]["image-tag"] = image_tag
                 service_change_details["change-request"]["z-currently-running"][service_name]["config-ref"] = config_tag
+                service_change_details["change-request"]["z-currently-running"][service_name]["current-state"] = \
+                    service["CurrentStatus"]
+
     return service_details, service_change_details
 
 
@@ -77,6 +81,7 @@ def run_action() -> None:
                                                                               services_array)
         print(f"::set-output name=service_details::{json.dumps(service_details)}{os.linesep}")
         print(f"::set-output name=service_change_details::{json.dumps(service_change_details)}{os.linesep}")
+
     except Exception as e:
         print(f"::error ::{str(e)}{os.linesep}")
         raise e
