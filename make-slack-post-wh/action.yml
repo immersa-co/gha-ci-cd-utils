@@ -11,6 +11,9 @@ inputs:
   action_success:
     description: "Action Succeeded or failed, True if success, False if failure"
     required: true
+  action_description:
+    description: "Description of action"
+    required: false
   details:
     description: "Details of the run as a dict {}"
     required: false

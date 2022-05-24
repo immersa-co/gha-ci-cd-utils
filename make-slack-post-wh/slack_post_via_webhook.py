@@ -4,11 +4,12 @@ import requests
 
 
 class PostToSlackWebhook:
-    def __init__(self, slack_webhook_url, action, action_success, details=None):
+    def __init__(self, slack_webhook_url, action, action_success, details=None, action_description=None):
         self.slack_webhook_url = slack_webhook_url
         self.action = action
         self.action_success = action_success
         self.details = details
+        self.action_description = action_description
 
     @staticmethod
     def get_slack_payload_section(about, url):
@@ -25,10 +26,13 @@ class PostToSlackWebhook:
             }
 
     def get_slack_payload_status_text(self):
-        success_text = f":tada: The {self.action} was successfully completed."
+        success_text = f":tada: The {self.action} was successfully completed"
         failure_text = f":alert: The {self.action} could not be successfully completed"
 
-        return success_text if self.action_success else failure_text
+        text = success_text if self.action_success else failure_text
+        text = f"{text}. {self.action_description}"
+
+        return text
 
     def get_slack_payload(self):
         text = self.get_slack_payload_status_text()
@@ -78,8 +82,11 @@ def main():
     else:
         details = None
 
+    action_description = os.environ["INPUT_ACTION_DESCRIPTION"]
+    if action_description == "":
+        action_description = None
     # Do the slack post
-    post_slack = PostToSlackWebhook(slack_webhook_url, action, action_success, details)
+    post_slack = PostToSlackWebhook(slack_webhook_url, action, action_success, details, action_description)
     result = post_slack.post_to_webhook()
     print(f"::set-output name=result::{result}{os.linesep}")
 
