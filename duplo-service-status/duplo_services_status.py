@@ -53,8 +53,10 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
                 if status == 1:
                     running_services.append(f"{image_tag}")
                 else:
-                    failed_service_dict[f"{image_tag}"] = status
-                    if status != 3:
+                    # Ignore Deleted status for adding to failed services
+                    if status != 6:
+                        failed_service_dict[f"{image_tag}"] = status
+                    if status != 3 or status != 6:
                         only_pending_status = False
     return running_services, failed_service_dict, only_pending_status
 
@@ -95,7 +97,7 @@ def run_action() -> None:
                           f"in running status. {json.dumps(failed_service_dict)}")
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
-        print(f"::set-output name=result::{len(failed_service_dict) == 0}{os.linesep}")
+        print(f"::set-output name=result::{len(failed_service_dict) == 0 and len(running_services) > 0}{os.linesep}")
     except Exception as e:
         print(f"::error ::{str(e)}{os.linesep}")
         raise e
