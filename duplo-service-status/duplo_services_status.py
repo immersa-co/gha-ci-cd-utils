@@ -56,7 +56,7 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
                     # Ignore Deleted status for adding to failed services
                     if status != 6:
                         failed_service_dict[f"{image_tag}"] = status
-                    if status != 3 or status != 6:
+                    if status != 3 and status != 6:
                         only_pending_status = False
     return running_services, failed_service_dict, only_pending_status
 
@@ -94,7 +94,10 @@ def run_action() -> None:
                     time.sleep(int(retry_delay))
                 else:
                     print(f"Giving up after {max_attempts_str} attempts, there are services not "
-                          f"in running status. {json.dumps(failed_service_dict)}")
+                          f"in running status. {json.dumps(failed_service_dict)}. remaining attempts {max_attempts}. "
+                          f"only_pending_status is [{only_pending_status}], result is "
+                          f"[{len(failed_service_dict) == 0 and len(running_services) > 0}]")
+                    break
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
         print(f"::set-output name=result::{len(failed_service_dict) == 0 and len(running_services) > 0}{os.linesep}")
@@ -103,5 +106,15 @@ def run_action() -> None:
         raise e
 
 
+def debug_python_directly():
+    os.environ["INPUT_HOST"] = "https://immersa-dev.duplocloud.net/"
+    os.environ["INPUT_TENANT"] = "dev01"
+    os.environ["INPUT_TOKEN"] = os.getenv("DDT")
+    os.environ["INPUT_SERVICES"] = '["postgres"]'
+    os.environ["INPUT_MAX_ATTEMPTS"] = "5"
+    os.environ["INPUT_RETRY_DELAY"] = "1"
+
+
 if __name__ == "__main__":
+    # debug_python_directly()
     run_action()
