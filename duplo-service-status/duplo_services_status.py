@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import time
+import timeit
 
 # TODO: Future enhancement create an action to look up all tenants and Ids using
 #   https://immersa-dev.duplocloud.net/admin/GetTenantsForUser
@@ -62,6 +63,8 @@ def fetch_duplo_services(host, tenant, tenant_id, token, services_array):
 
 
 def run_action() -> None:
+    start = timeit.timeit()
+
     # host, tenant, tenant_id, token, services
     host = os.environ["INPUT_HOST"]
     tenant = os.environ["INPUT_TENANT"]
@@ -98,6 +101,8 @@ def run_action() -> None:
                           f"only_pending_status is [{only_pending_status}], result is "
                           f"[{len(failed_service_dict) == 0 and len(running_services) > 0}]")
                     break
+        end = timeit.timeit()
+        print(f"::set-output name=time_elapsed::{end - start}{os.linesep}")
         print(f"::set-output name=running_services::{running_services}{os.linesep}")
         print(f"::set-output name=failed_service_dict::{json.dumps(failed_service_dict)}{os.linesep}")
         print(f"::set-output name=result::{len(failed_service_dict) == 0 and len(running_services) > 0}{os.linesep}")
