@@ -4,10 +4,11 @@ import requests
 
 
 class PostToSlackWebhook:
-    def __init__(self, slack_webhook_url, action, action_success, details=None, action_description=None):
+    def __init__(self, slack_webhook_url, action, action_success, starting_action, details=None, action_description=None):
         self.slack_webhook_url = slack_webhook_url
         self.action = action
         self.action_success = action_success
+        self.starting_action = starting_action
         self.details = details
         self.action_description = action_description
 
@@ -26,12 +27,13 @@ class PostToSlackWebhook:
             }
 
     def get_slack_payload_status_text(self):
-        success_text = f":tada: The {self.action} was successfully completed"
-        failure_text = f":alert: The {self.action} could not be successfully completed"
-
-        text = success_text if self.action_success else failure_text
-        text = f"{text}. {self.action_description}"
-
+        if self.starting_action:
+            text = f":large_orange_circle: Starting {self.action}"
+        else:
+            success_text = f":tada: The {self.action} was successfully completed"
+            failure_text = f":alert: The {self.action} could not be successfully completed"
+            text = success_text if self.action_success else failure_text
+            text = f"{text}. {self.action_description}"
         return text
 
     def get_slack_payload(self):
@@ -69,10 +71,15 @@ def main():
     if not slack_webhook_url.startswith("https://hooks.slack.com/services/"):
         raise Exception(f"[{slack_webhook_url}] is not a valid slack URL")
 
+    starting_action = False
     action = os.environ["INPUT_ACTION"]
     action_success_str = os.environ["INPUT_ACTION_SUCCESS"].lower()
-    if action_success_str not in {"true", "false"}:
-        raise Exception(f"[{action_success_str}] is not a valid value [True|False|true] for action_success")
+
+    if action_success_str == "starting":
+        starting_action = True
+        action_success = None
+    elif action_success_str not in {"true", "false"}:
+        raise Exception(f"[{action_success_str}] is not a valid value [True|False|Starting] for action_success")
     else:
         action_success = True if action_success_str == 'true' else False
 
@@ -86,7 +93,8 @@ def main():
     if action_description == "":
         action_description = None
     # Do the slack post
-    post_slack = PostToSlackWebhook(slack_webhook_url, action, action_success, details, action_description)
+    post_slack = PostToSlackWebhook(slack_webhook_url, action, action_success, starting_action,
+                                    details, action_description)
     result = post_slack.post_to_webhook()
     print(f"::set-output name=result::{result}{os.linesep}")
 
