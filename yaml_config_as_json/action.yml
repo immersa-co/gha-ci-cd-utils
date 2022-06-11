@@ -5,7 +5,7 @@ inputs:
   gitRepo:
     description: "Repository to read the file from"
     required: true
-  fileName:
+  filename:
     description: "File to read YAML from"
     required: true
   ghaToken:
@@ -26,7 +26,7 @@ runs:
         echo "::set-output name=yamlAsJson::$(echo $($GITHUB_ACTION_PATH/yaml_as_json.sh))"
       env:
         GITREPO: ${{inputs.gitRepo}}
-        GITREF: ${{inouts.gitRef}}
-        FILENAME: ${{inputs.fileMName}}
+        GITREF: ${{inputs.gitRef}}
+        FILENAME: ${{inputs.filename}}
         GHATOKEN: ${{inputs.ghaToken}}
       shell: bash
