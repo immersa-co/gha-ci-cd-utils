@@ -23,7 +23,7 @@ runs:
   steps:
     - id: fetch_yaml_as_json
       run: |
-        echo "::set-output name=yamlAsJson::$(echo $($GITHUB_ACTION_PATH/yaml_config_as_json/yaml_as_json.sh))"
+        echo "::set-output name=yamlAsJson::$(echo $($GITHUB_ACTION_PATH/yaml_as_json.sh))"
       env:
         GITREPO: ${{inputs.gitRepo}}
         GITREF: ${{inputs.gitRef}}
