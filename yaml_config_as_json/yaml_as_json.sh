@@ -2,7 +2,14 @@
 
 
 fetch_yaml_as_json() {
-  yamlcontent=$(curl --header "Authorization: token $GHATOKEN" https://raw.githubusercontent.com/$GITREPO/$GITREF/configs/$FILENAME.yaml)
+
+  if [[ $FILENAME == ci* ]]
+  then
+    export readfile="ci0x"
+  else
+    export readfile=$FILENAME
+  fi
+  yamlcontent=$(curl --header "Authorization: token $GHATOKEN" https://raw.githubusercontent.com/$GITREPO/$GITREF/$FILEPATH/$readfile$FILEEXT)
   jsoncontent=$(echo "$yamlcontent" | sed '/#.*/d' | yq -o=json)
   if [[ $FILENAME == ci* ]]
   then
