@@ -37,6 +37,6 @@ runs:
         GITREF: ${{inputs.gitRef}}
         FILEPATH: ${{inputs.filepath}}
         FILENAME: ${{inputs.filename}}
-        FILEEXT: $${inputs.fileExt}}
+        FILEEXT: ${{inputs.fileExt}}
         GHATOKEN: ${{inputs.ghaToken}}
       shell: bash
