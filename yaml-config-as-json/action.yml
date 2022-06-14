@@ -1,0 +1,42 @@
+name: "YAML Reader converts to JSON"
+description: "Reads a YAML File from Github Repo and return as json, if filemame starts with ci, it replaces some values in the string as well"
+author: "Surat Mukker"
+inputs:
+  gitRepo:
+    description: "Repository to read the file from"
+    required: true
+  filepath:
+    description: "path the file exists in"
+    required: false
+    default: ""
+  filename:
+    description: "File to read YAML from"
+    required: true
+  fileExt:
+    description: "extension of the YAML file. Default is yaml"
+    required: false
+    default: ".yaml"
+  ghaToken:
+    description: "GH Access Token with read access to repo"
+    required: true
+  gitRef:
+    description: "Branch, tag or sha to read the YAML from"
+    required: true
+outputs:
+  yamlAsJson:
+    description: "File contents as a JSON string"
+    value: ${{ steps.fetch_yaml_as_json.outputs.yamlAsJson }}
+runs:
+  using: "composite"
+  steps:
+    - id: fetch_yaml_as_json
+      run: |
+        echo "::set-output name=yamlAsJson::$(echo $($GITHUB_ACTION_PATH/yaml_as_json.sh))"
+      env:
+        GITREPO: ${{inputs.gitRepo}}
+        GITREF: ${{inputs.gitRef}}
+        FILEPATH: ${{inputs.filepath}}
+        FILENAME: ${{inputs.filename}}
+        FILEEXT: ${{inputs.fileExt}}
+        GHATOKEN: ${{inputs.ghaToken}}
+      shell: bash
