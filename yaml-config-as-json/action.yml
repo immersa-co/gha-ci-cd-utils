@@ -1,14 +1,17 @@
 name: "YAML Reader converts to JSON"
-description: "Reads a YAML File from Github Repo and return as json, if filemame starts with ci, it replaces some values in the string as well"
+description: "Reads a YAML File from Github Repo and return as json, if filemame starts with ci, it replaces some values 
+in the string as well. Also can use for multiple files from multiple repos. Use case is to read configs for an 
+environment from various repos. Configs are in files for each environment, so that parameter is global. "
 author: "Surat Mukker"
 inputs:
-  gitRepo:
-    description: "Repository to read the file from"
-    required: true
-  filepath:
-    description: "path the file exists in"
+  gitRepo_Ref_Filepath:
+    description: "Repository to read the file from, use none or omit if using gitRepos_Ref_Filepath"
     required: false
-    default: ""
+    default: "none"
+  gitRepos_Ref_Filepath:
+    description: "Repository to read the file from, use none or omit if using gitRepo_Ref_Filepath"
+    required: false
+    default: "none"
   filename:
     description: "File to read YAML from"
     required: true
@@ -18,9 +21,6 @@ inputs:
     default: ".yaml"
   ghaToken:
     description: "GH Access Token with read access to repo"
-    required: true
-  gitRef:
-    description: "Branch, tag or sha to read the YAML from"
     required: true
 outputs:
   yamlAsJson:
@@ -33,9 +33,8 @@ runs:
       run: |
         echo "::set-output name=yamlAsJson::$(echo $($GITHUB_ACTION_PATH/yaml_as_json.sh))"
       env:
-        GITREPO: ${{inputs.gitRepo}}
-        GITREF: ${{inputs.gitRef}}
-        FILEPATH: ${{inputs.filepath}}
+        GITREPO_REF_FILEPATH: ${{inputs.gitRepo_Ref_Filepath}}
+        GITREPOS_REF_FILEPATH: ${{inputs.gitRepos_Ref_Filepath}}
         FILENAME: ${{inputs.filename}}
         FILEEXT: ${{inputs.fileExt}}
         GHATOKEN: ${{inputs.ghaToken}}
