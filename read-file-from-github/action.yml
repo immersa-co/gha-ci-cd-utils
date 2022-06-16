@@ -1,0 +1,38 @@
+name: "Commit contents of a file in github repo"
+description: "Contents of a file to commit to a repo on a branch.If the contents match it will not write to the file
+and return the commit sha of the HEAD of the branch"
+author: "Surat Mukker"
+inputs:
+  gitRepo:
+    description: "Repository to read file from"
+    required: true
+  gitRef:
+    description: "Git branch, ref tag to read file from"
+    required: true
+  filepath:
+    description: "path the file exists in"
+    required: false
+    default: ""
+  filename:
+    description: "Filename to read from"
+    required: true
+  ghaToken:
+    description: "GH Access Token with read access to repo"
+    required: true
+outputs:
+  fileContents:
+    description: "Contents read from the ref in the repo in the file"
+    value: ${{ steps.read-from-repo.outputs.fileContents }}
+runs:
+  using: "composite"
+  steps:
+    - id: read-from-repo
+      run: |
+        echo "::set-output name=fileContents::$(echo $($GITHUB_ACTION_PATH/read_file_from_github.sh))"
+      env:
+        GITREPO: ${{inputs.gitRepo}}
+        GITREF: ${{inputs.gitRef}}
+        FILEPATH: ${{inputs.filepath}}
+        FILENAME: ${{inputs.filename}}
+        GHATOKEN: ${{inputs.ghaToken}}
+      shell: bash
