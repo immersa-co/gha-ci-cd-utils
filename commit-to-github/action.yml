@@ -1,0 +1,50 @@
+name: "Commit a change to github"
+description: "Commits a change in a file to a github repo, if there are changes. If the file in the repo in the 
+branch has the same content - it will return the commit sha if there is a new commit, or of the HEAD of the branch"
+author: "Surat Mukker"
+inputs:
+  gitRepo:
+    description: "Repository to write to"
+    required: true
+  gitBranch:
+    description: "Branch name that needs to be updated"
+    required: true
+  filepath:
+    description: "path the file exists in"
+    required: false
+    default: ""
+  filename:
+    description: "File to write to"
+    required: true
+  fileContents:
+    description: "Content that needs to be written to the file"
+    required: false
+    default: ".yaml"
+  ghaToken:
+    description: "GH Access Token with commit access to repo, without a PR into the branch"
+    required: true
+  message:
+    description: "Commit Message"
+    required: true
+outputs:
+  commitSha:
+    description: "Commit sha of the contents in the branch"
+    value: ${{ steps.commit-to-repo.outputs.commitSha }}
+  updated:
+    description: "True if an commit was made and False otherwise"
+    value: ${{ steps.commit-to-repo.outputs.updated }}
+runs:
+  using: "composite"
+  steps:
+    - id: commit-to-repo
+      run: |
+        echo "::set-output name=commitSha::$(echo $($GITHUB_ACTION_PATH/commit_to_github.sh))"
+        echo "::set-output name=updated::$(echo $FILE_UPDATED)"
+      env:
+        GITREPO: ${{inputs.gitRepo}}
+        GITBRANCH: ${{inputs.gitBranch}}
+        FILENAME: ${{inputs.filename}}
+        GHATOKEN: ${{inputs.ghaToken}}
+        FILECONTENTS: ${{inputs.fileContents}}
+        MESSAGE: ${{inputs.message}}
+      shell: bash
