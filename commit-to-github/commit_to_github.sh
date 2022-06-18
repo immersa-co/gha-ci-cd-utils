@@ -38,7 +38,9 @@ process_commit_steps() {
     COMMIT_SHA=$(echo $response | jq '.commit.sha' | tr -d '"')
     FILE_UPDATED='True'
   fi
-  echo "$COMMIT_SHA $FILE_UPDATED"
+
+  echo "::set-output name=commitSha::$(echo $COMMIT_SHA)"
+  echo "::set-output name=updated::$(echo $FILE_UPDATED)"
 }
 
 process_commit_steps
