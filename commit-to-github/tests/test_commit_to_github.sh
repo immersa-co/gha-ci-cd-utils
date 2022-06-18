@@ -9,12 +9,13 @@ export GITBRANCH="setup"
 export FILEPATH=""
 export FILENAME="services.yaml"
 export MESSAGE="Updating service.yaml to test"
+export BASE64OPTIONS=""
 
 export FILECONTENTS=$(curl --header "Authorization: token $GHATOKEN" https://raw.githubusercontent.com/$GITREPO/$GITBRANCH/$FILENAME)
 
 ../commit_to_github.sh
 
-export FILECONTENTS=$(echo "$FILECONTENTS""    ")
+export FILECONTENTS=$(echo "$FILECONTENTS""  ")
 
 echo -e "$FILECONTENTS"
 ../commit_to_github.sh

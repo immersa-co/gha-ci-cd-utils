@@ -46,4 +46,5 @@ runs:
         GHATOKEN: ${{inputs.ghaToken}}
         FILECONTENTS: ${{inputs.fileContents}}
         MESSAGE: ${{inputs.message}}
+        BASE64OPTIONS: "-w 0"
       shell: bash

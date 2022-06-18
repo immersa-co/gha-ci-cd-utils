@@ -34,8 +34,7 @@ process_commit_steps() {
     echo $FILE_UPDATED
     echo $COMMIT_SHA
   else
-    fileContentBase64=$(echo "$FILECONTENTS" | base64 | sed 's/ //g')
-    echo $fileContentBase64
+    fileContentBase64=$(echo "$FILECONTENTS" | base64 $BASE64OPTIONS)
     echo "{\"message\": \"$MESSAGE\", \"content\": \"$fileContentBase64\", \"sha\": \"$currentSha\", \"branch\" : \"$GITBRANCH\"}"
 
     # Make a commit to the branch
