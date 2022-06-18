@@ -40,4 +40,6 @@ process_commit_steps() {
   fi
 }
 
-process_commit_steps
+commitSha=$(process_commit_steps)
+echo "::set-output name=commitSha::$commitSha"
+echo "::set-output name=updated::$FILE_UPDATED"

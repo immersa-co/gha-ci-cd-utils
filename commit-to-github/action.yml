@@ -38,8 +38,10 @@ runs:
   steps:
     - id: commit-to-repo
       run: |
-        echo "::set-output name=commitSha::$(echo $($GITHUB_ACTION_PATH/commit_to_github.sh))"
-        echo "::set-output name=updated::$(echo $FILE_UPDATED)"
+        # Set the outputs from the script instead of here
+        $GITHUB_ACTION_PATH/commit_to_github.sh
+#        echo "::set-output name=commitSha::$(echo $($GITHUB_ACTION_PATH/commit_to_github.sh))"
+#        echo "::set-output name=updated::$(echo $FILE_UPDATED)"
       env:
         GITREPO: ${{inputs.gitRepo}}
         GITBRANCH: ${{inputs.gitBranch}}
