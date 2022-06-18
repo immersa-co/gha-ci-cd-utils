@@ -28,8 +28,8 @@ process_commit_steps() {
     # Get the commit sha of the tree
     repoRefResponse=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
         https://api.github.com/repos/$GITREPO/git/ref/heads/$GITBRANCH)
-    echo $repoRefResponse | jq '.object.sha'
-    export FILE_UPDATED='False'
+    COMMIT_SHA=$(echo $repoRefResponse | jq '.object.sha' | tr -d '"')
+    FILE_UPDATED='False'
   else
     # Make a commit to the branch
     response=$(curl -X PUT -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
