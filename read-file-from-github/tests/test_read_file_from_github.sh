@@ -10,3 +10,10 @@ export FILEPATH="configs"
 
 export FILENAME="dev01.yaml"
 ../read_file_from_github.sh
+
+export GITREPO="immersa-co/change-control"
+export GITREF="setup"
+export FILEPATH=""
+
+export FILENAME="services.yaml"
+../read_file_from_github.sh
