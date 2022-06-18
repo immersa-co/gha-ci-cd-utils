@@ -13,3 +13,8 @@ export MESSAGE="Updating service.yaml to test"
 export FILECONTENTS=$(curl --header "Authorization: token $GHATOKEN" https://raw.githubusercontent.com/$GITREPO/$GITBRANCH/$FILENAME)
 
 ../commit_to_github.sh
+
+export FILECONTENTS=$(echo "$FILECONTENTS""    ")
+
+echo -e "$FILECONTENTS"
+../commit_to_github.sh

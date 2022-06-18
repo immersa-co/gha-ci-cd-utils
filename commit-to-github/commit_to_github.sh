@@ -14,7 +14,7 @@ process_commit_steps() {
    # does not work, sed does. Using "Accept: application/vnd.github.VERSION.raw" will give un-encoded contents
   gitContents=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
                  https://api.github.com/repos/$fileUrl?ref=$GITBRANCH)
-  currentContent=$(echo $gitContents | jq '.content' | tr -d '"' | sed 's/\\n//g')
+  currentContent=$(echo $gitContents | jq '.content' | tr -d '"' | sed 's/\\n//g' | base64 -d)
   currentSha=$(echo $gitContents | jq '.sha' | tr -d '"')
   echo "$gitContents"
   echo $currentContent
@@ -22,10 +22,8 @@ process_commit_steps() {
 
   # BAse 64 encode the desired contents and compare with what is in repo. If same then return the commit-sha of
   # head otherwise commit and return the sha
-  fileContentBase64=$(echo "$FILECONTENTS" | base64 -w 0)
   echo $currentContent
-  echo $fileContentBase64
-  if [[ "$currentContent" == "$fileContentBase64" ]]
+  if [[ "$currentContent" == "$FILECONTENTS" ]]
   then
     # Get the commit sha of the tree
     repoRefResponse=$(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
@@ -36,6 +34,10 @@ process_commit_steps() {
     echo $FILE_UPDATED
     echo $COMMIT_SHA
   else
+    fileContentBase64=$(echo "$FILECONTENTS" | base64)
+    echo $fileContentBase64
+    echo "{\"message\": \"$MESSAGE\", \"content\": \"$fileContentBase64\", \"sha\": \"$currentSha\", \"branch\" : \"$GITBRANCH\"}"
+
     # Make a commit to the branch
     response=$(curl -X PUT -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
       -d "{\"message\": \"$MESSAGE\", \"content\": \"$fileContentBase64\", \"sha\": \"$currentSha\", \"branch\" : \"$GITBRANCH\"}" \
