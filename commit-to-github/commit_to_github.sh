@@ -22,7 +22,7 @@ process_commit_steps() {
 
   # BAse 64 encode the desired contents and compare with what is in repo. If same then return the commit-sha of
   # head otherwise commit and return the sha
-  fileContentBase64=$(echo "$FILECONTENTS" | base64)
+  fileContentBase64=$(echo "$FILECONTENTS" | base64 -w 0)
   echo $currentContent
   echo $fileContentBase64
   if [[ "$currentContent" == "$fileContentBase64" ]]
