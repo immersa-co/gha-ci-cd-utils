@@ -30,6 +30,9 @@ process_commit_steps() {
         https://api.github.com/repos/$GITREPO/git/ref/heads/$GITBRANCH)
     COMMIT_SHA=$(echo $repoRefResponse | jq '.object.sha' | tr -d '"')
     FILE_UPDATED='False'
+    echo $repoRefResponse
+    echo $FILE_UPDATED
+    echo $COMMIT_SHA
   else
     # Make a commit to the branch
     response=$(curl -X PUT -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
@@ -37,6 +40,9 @@ process_commit_steps() {
        https://api.github.com/repos/$fileUrl)
     COMMIT_SHA=$(echo $response | jq '.commit.sha' | tr -d '"')
     FILE_UPDATED='True'
+    echo $response
+    echo $FILE_UPDATED
+    echo $COMMIT_SHA
   fi
 
   echo "::set-output name=commitSha::$(echo $COMMIT_SHA)"

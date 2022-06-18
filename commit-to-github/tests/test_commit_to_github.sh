@@ -12,9 +12,4 @@ export MESSAGE="Updating service.yaml to test"
 
 export FILECONTENTS=$(curl --header "Authorization: token $GHATOKEN" https://raw.githubusercontent.com/$GITREPO/$GITBRANCH/$FILENAME)
 
-#../commit_to_github.sh
-commitShaAndUpdated=$(../commit_to_github.sh)
-commitSha=$(echo $commitShaAndUpdated | awk '{print $1}')
-updated=$(echo $commitShaAndUpdated | awk '{print $2}')
-echo "::set-output name=commitSha::$(echo $commitSha)"
-echo "::set-output name=updated::$(echo $updated)"
+../commit_to_github.sh
