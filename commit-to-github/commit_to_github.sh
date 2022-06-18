@@ -35,11 +35,10 @@ process_commit_steps() {
     response=$(curl -X PUT -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHATOKEN" \
       -d "{\"message\": \"$MESSAGE\", \"content\": \"$fileContentBase64\", \"sha\": \"$currentSha\", \"branch\" : \"$GITBRANCH\"}" \
        https://api.github.com/repos/$fileUrl)
-    echo $response | jq '.commit.sha' | tr -d '"'
-    export FILE_UPDATED='True'
+    COMMIT_SHA=$(echo $response | jq '.commit.sha' | tr -d '"')
+    FILE_UPDATED='True'
   fi
+  echo "$COMMIT_SHA $FILE_UPDATED"
 }
 
-commitSha=$(process_commit_steps)
-echo "::set-output name=commitSha::$commitSha"
-echo "::set-output name=updated::$FILE_UPDATED"
+process_commit_steps
