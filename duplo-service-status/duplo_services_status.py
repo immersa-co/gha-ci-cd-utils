@@ -112,7 +112,6 @@ def run_action() -> None:
 
 
 def debug_python_directly():
-    os.environ["INPUT_HOST"] = "https://immersa-dev.duplocloud.net/"
     os.environ["INPUT_TENANT"] = "dev01"
     os.environ["INPUT_TOKEN"] = os.getenv("DDT")
     os.environ["INPUT_SERVICES"] = '["postgres"]'
